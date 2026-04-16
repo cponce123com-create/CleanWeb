@@ -30,3 +30,6 @@ externalPort = 80
 [[ports]]
 localPort = 23891
 externalPort = 3000
+
+[nix]
+packages = ["mmh"]
