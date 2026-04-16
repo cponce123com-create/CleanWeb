@@ -25,3 +25,25 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - `pnpm --filter @workspace/api-server run dev` — run API server locally
 
 See the `pnpm-workspace` skill for workspace structure, TypeScript setup, and package details.
+
+## Artifacts
+
+### CleanWeb.tools (`artifacts/cleanweb-tools`)
+- **Kind**: react-vite (frontend-only, no backend)
+- **Preview path**: `/`
+- **Language**: Spanish (todo en español)
+- **Description**: Colección de herramientas gratuitas para limpiar y gestionar redes sociales. Todo funciona en el navegador con scripts de consola, sin guardar datos.
+- **Pages**:
+  - `/` — Homepage con buscador en tiempo real y grid de herramientas por plataforma
+  - `/google-fotos` — Eliminar Google Fotos (script de consola)
+  - `/youtube/exportar-playlist` — Exportar playlist YouTube a CSV
+  - `/youtube/borrar-historial` — Borrar historial YouTube
+  - `/instagram/dejar-de-seguir` — Dejar de seguir en Instagram
+  - `/instagram/quitar-likes` — Quitar likes en Instagram
+  - `/twitter/dejar-de-seguir` — Dejar de seguir en Twitter/X
+  - `/twitter/borrar-tweets` — Borrar tweets
+  - `/facebook/dejar-de-seguir` — Dejar de seguir en Facebook
+  - `/tiktok/dejar-de-seguir` — Dejar de seguir en TikTok
+  - `/spotify/exportar-playlist` — Exportar playlist Spotify (OAuth PKCE)
+- **Design tokens**: fondo #0a0a0a, cards #141414, acento verde #4ade80, azul #60a5fa, rojo #ef4444
+- **Icons**: lucide-react + react-icons/si (SiInstagram, SiX, SiFacebook, SiTiktok, SiSpotify, SiYoutube, SiGooglephotos); LinkedIn usa Linkedin de lucide-react

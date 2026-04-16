@@ -1,0 +1,1060 @@
+Build a scalable web app called "SocialKit Tools" — a growing 
+collection of free browser-based tools to manage, clean, and 
+export data from social media platforms and streaming services.
+
+═══════════════════════════════════════
+TECH STACK
+═══════════════════════════════════════
+- Backend: Node.js + Express
+- Frontend: Single HTML file per tool + shared layout
+- No database, no authentication required
+- Deployable on Render (free tier)
+- package.json with "start": "node server.js"
+- Port from process.env.PORT || 3000
+
+═══════════════════════════════════════
+PROJECT STRUCTURE
+═══════════════════════════════════════
+
+/socialkit-tools
+  ├── server.js
+  ├── package.json
+  └── public/
+        ├── index.html          ← Homepage with all tools listed
+        ├── /google-photos/
+        │     └── index.html
+        ├── /instagram/
+        │     ├── unfollow.html
+        │     ├── unlike.html
+        │     └── delete-comments.html
+        ├── /twitter/
+        │     ├── unfollow.html
+        │     └── delete-tweets.html
+        ├── /facebook/
+        │     ├── unfollow.html
+        │     ├── delete-posts.html
+        │     └── leave-groups.html
+        ├── /tiktok/
+        │     ├── unfollow.html
+        │     └── unlike.html
+        ├── /spotify/
+        │     └── export-playlist.html
+        └── /youtube/
+              ├── export-playlist.html
+              └── delete-history.html
+
+═══════════════════════════════════════
+HOMEPAGE (public/index.html)
+═══════════════════════════════════════
+
+Design a beautiful dark-themed homepage with:
+
+1. HEADER:
+   - Logo: "🧰 SocialKit Tools"
+   - Tagline: "Free browser tools to clean and manage 
+     your digital life"
+   - Search bar to filter tools
+
+2. CATEGORIES GRID:
+   Display tools grouped by platform with icons:
+
+   📸 Google
+   - Google Photos — Delete all photos & videos
+   - YouTube — Export playlist
+   - YouTube — Delete watch history
+
+   📱 Instagram  
+   - Unfollow non-followers
+   - Unlike all posts
+   - Delete all comments
+   - Delete all stories (coming soon)
+
+   🐦 Twitter / X
+   - Unfollow everyone
+   - Delete all tweets
+   - Unlike all tweets
+
+   👥 Facebook
+   - Unfollow all friends & pages
+   - Delete all posts
+   - Leave all groups
+   - Delete all comments
+
+   🎵 TikTok
+   - Unfollow all accounts
+   - Unlike all videos
+   - Delete all comments
+
+   🎧 Spotify
+   - Export playlist to CSV/JSON
+   - Import playlist from YouTube
+
+   💼 LinkedIn
+   - Unfollow all connections
+   - Delete all posts
+
+3. Each tool card must show:
+   - Platform icon (emoji)
+   - Tool name
+   - Short description (1 line)
+   - Badge: "Console Script" or "API" or "Coming Soon"
+   - Click opens the tool page
+
+4. FOOTER:
+   - "All tools run in your browser. No data is stored."
+   - GitHub link placeholder
+   - "New tools added weekly"
+
+═══════════════════════════════════════
+DESIGN SYSTEM (apply to ALL pages)
+═══════════════════════════════════════
+- Background: #0a0a0a
+- Cards: #141414
+- Borders: #222
+- Primary accent: #4ade80 (green)
+- Secondary accent: #60a5fa (blue)
+- Warning color: #ef4444 (red)
+- Font: Google Fonts — Inter
+- Border radius: 12px
+- Fully responsive (mobile first)
+- Smooth hover transitions on all cards
+
+═══════════════════════════════════════
+INDIVIDUAL TOOL PAGES
+═══════════════════════════════════════
+
+Each tool page must have:
+1. Breadcrumb: Home > Platform > Tool Name
+2. Warning banner (red) if destructive action
+3. Step-by-step guide (numbered cards)
+4. Script block with:
+   - Syntax-highlighted code
+   - Copy button with "Copied ✓" feedback
+   - Clipboard fallback for older browsers
+5. Tips section (blue info box)
+6. "Back to all tools" button
+7. "Related tools" section showing 2-3 other tools
+
+═══════════════════════════════════════
+TOOLS TO BUILD NOW (Phase 1)
+═══════════════════════════════════════
+
+Build these tools with working scripts:
+
+1. /google-photos/ 
+   [Already built - reuse existing script]
+
+2. /instagram/unfollow.html
+   Script: Uses Instagram's internal API via fetch()
+   with csrftoken cookie to unfollow non-followers
+   with random delays between 3-6 seconds
+
+3. /instagram/unlike.html
+   Script: Scrolls through liked posts and unlikes
+   them one by one with human-like delays
+
+4. /twitter/unfollow.html
+   Script: Clicks all unfollow buttons on
+   twitter.com/YOUR_NAME/following page
+   with confirm dialog handler
+
+5. /twitter/delete-tweets.html
+   Script: Uses twitter.com UI automation to
+   select and delete tweets in batches
+
+6. /facebook/unfollow.html
+   Script: Automates clicking unfollow buttons
+   on facebook.com/feed/preferences page
+
+7. /youtube/delete-history.html
+   Script: Clears YouTube watch history via
+   UI automation on myactivity.google.com
+
+8. /youtube/export-playlist.html
+   Script: Extracts all video titles, channels, 
+   and URLs from a YouTube playlist page and
+   downloads them as a CSV file
+
+9. /spotify/export-playlist.html
+   Uses Spotify Web API with OAuth PKCE flow:
+   - Button "Connect with Spotify"
+   - After auth: show all playlists
+   - Select one and export as CSV or JSON
+   Note: User needs to create a free Spotify 
+   app at developer.spotify.com to get a 
+   Client ID. Guide this in the UI.
+
+10. /tiktok/unfollow.html
+    Script: Automates unfollowing on TikTok
+    web via UI button clicking with delays
+
+═══════════════════════════════════════
+MARK AS "COMING SOON" (Phase 2)
+═══════════════════════════════════════
+- Instagram delete stories
+- Facebook delete all posts  
+- Facebook leave all groups
+- TikTok unlike all videos
+- LinkedIn unfollow all
+- Spotify import from YouTube
+- Reddit delete all comments
+
+Show these as grayed-out cards with a 
+"Coming Soon" badge on the homepage.
+
+═══════════════════════════════════════
+SERVER (server.js)
+═══════════════════════════════════════
+
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+app.listen(PORT, () => console.log(`Running on port ${PORT}`));
+
+═══════════════════════════════════════
+RENDER DEPLOY CONFIG (render.yaml)
+═══════════════════════════════════════
+
+services:
+  - type: web
+    name: socialkit-tools
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+Con esto tienes una base que puedes ir ampliando herramienta por herramienta cada semana. ¿Quieres que también te diseñe el sistema de "sugerir nueva herramienta" para que los usuarios pidan las que más necesitan?dame el super prompt para q replit lo haga, paso a paso para q no se equivoque12:36Aquí está el super prompt dividido en pasos secuenciales para que Replit no se pierda:
+
+PASO 1 — Estructura base
+Create a new Node.js + Express project called "socialkit-tools".
+
+Do ONLY this in this step, nothing more:
+
+1. Create this exact folder structure:
+/socialkit-tools
+  ├── server.js
+  ├── package.json
+  └── public/
+        ├── index.html
+        ├── google-photos/
+        │     └── index.html
+        ├── instagram/
+        │     ├── unfollow.html
+        │     └── unlike.html
+        ├── twitter/
+        │     ├── unfollow.html
+        │     └── delete-tweets.html
+        ├── facebook/
+        │     └── unfollow.html
+        ├── tiktok/
+        │     └── unfollow.html
+        ├── youtube/
+        │     ├── export-playlist.html
+        │     └── delete-history.html
+        └── spotify/
+              └── export-playlist.html
+
+2. Create server.js with this exact content:
+const express = require('express');
+const path = require('path');
+const app = express();
+const PORT = process.env.PORT || 3000;
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+3. Create package.json with this exact content:
+{
+  "name": "socialkit-tools",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
+
+4. Run: npm install
+
+5. Leave ALL html files empty for now.
+
+Confirm when done by showing me the folder structure with: find . -not -path './node_modules/*' -type f
+
+PASO 2 — Design system y homepage
+Now create public/index.html ONLY.
+
+This is the homepage that lists all tools.
+
+Requirements:
+- Dark theme background #0a0a0a
+- Font: Inter from Google Fonts
+- Fully responsive, mobile first
+- NO frameworks, pure HTML + CSS + JS
+
+The page must have:
+
+1. HEADER:
+   - Logo text: "🧰 SocialKit Tools"
+   - Tagline: "Herramientas gratuitas para limpiar y 
+     gestionar tu vida digital"
+   - Search input that filters tool cards in real time
+
+2. TOOLS GRID:
+   Display these cards grouped by platform.
+   Each card has: emoji icon, title, 1-line description,
+   green badge "Script" or blue badge "API" or 
+   gray badge "Próximamente", and links to its page.
+
+   Group 1 — 📸 Google
+   - "Eliminar Google Fotos" → /google-photos/ → badge: Script
+   - "Exportar playlist YouTube" → /youtube/export-playlist.html → Script
+   - "Borrar historial YouTube" → /youtube/delete-history.html → Script
+
+   Group 2 — 📱 Instagram
+   - "Dejar de seguir no-seguidores" → /instagram/unfollow.html → Script
+   - "Quitar likes masivamente" → /instagram/unlike.html → Script
+   - "Borrar comentarios" → badge: Próximamente → no link, grayed out
+
+   Group 3 — 🐦 Twitter / X
+   - "Dejar de seguir a todos" → /twitter/unfollow.html → Script
+   - "Borrar todos los tweets" → /twitter/delete-tweets.html → Script
+   - "Quitar likes de tweets" → badge: Próximamente → grayed out
+
+   Group 4 — 👥 Facebook
+   - "Dejar de seguir amigos y páginas" → /facebook/unfollow.html → Script
+   - "Salir de todos los grupos" → badge: Próximamente → grayed out
+   - "Borrar todos los posts" → badge: Próximamente → grayed out
+
+   Group 5 — 🎵 TikTok
+   - "Dejar de seguir todos" → /tiktok/unfollow.html → Script
+   - "Quitar likes masivamente" → badge: Próximamente → grayed out
+
+   Group 6 — 🎧 Spotify
+   - "Exportar playlist" → /spotify/export-playlist.html → badge: API
+
+   Group 7 — 💼 LinkedIn
+   - "Dejar de seguir conexiones" → badge: Próximamente → grayed out
+   - "Borrar todos los posts" → badge: Próximamente → grayed out
+
+3. DESIGN TOKENS to use:
+   --bg: #0a0a0a
+   --card: #141414
+   --border: #222222
+   --green: #4ade80
+   --blue: #60a5fa
+   --red: #ef4444
+   --text: #e5e5e5
+   --muted: #888888
+
+4. Card hover: border changes to --green, 
+   slight translateY(-2px)
+
+5. Available cards are clickable, 
+   grayed-out cards show cursor: not-allowed
+
+6. FOOTER:
+   "Todas las herramientas funcionan en tu navegador. 
+   Ningún dato es enviado a ningún servidor."
+
+7. Search bar filters cards in real time 
+   by tool name as user types
+
+Do NOT create any other files. Only public/index.html.
+Show me the file when done.
+
+PASO 3 — Template reutilizable para herramientas
+Create a reusable HTML template that ALL tool pages 
+will follow. Do NOT create actual tool pages yet.
+
+Show me only the template code as a code block 
+so I can review it before you use it.
+
+The template must include:
+
+1. Same dark theme as homepage (#0a0a0a background)
+2. NAVBAR: "🧰 SocialKit Tools" logo linking back to /
+3. BREADCRUMB: Home > [Platform] > [Tool Name]
+4. WARNING BANNER (red) with ⚠️ icon when the action 
+   is destructive (deletes or removes things)
+5. STEP-BY-STEP section: numbered cards 1,2,3,4
+6. CODE BLOCK:
+   - Dark background #0d1117
+   - Green monospace text
+   - "Copiar" button top-right that changes 
+     to "Copiado ✓" for 2 seconds
+   - Clipboard fallback using execCommand 
+     if navigator.clipboard fails
+7. TIPS BOX: blue bordered box with bullet points
+8. RELATED TOOLS section: 
+   shows 2 other tool cards at the bottom
+9. BACK button: "← Volver a todas las herramientas"
+10. FOOTER: same as homepage
+
+Design tokens same as homepage.
+Mobile responsive.
+Pure HTML + CSS + JS, no frameworks.
+
+PASO 4 — Herramientas Google y YouTube
+Using the template from Step 3, create these 3 pages:
+
+PAGE 1: public/google-photos/index.html
+- Title: "Eliminar Google Fotos masivamente"
+- Platform: Google
+- Destructive: YES (show red warning)
+- Warning text: "Las fotos eliminadas no se pueden 
+  recuperar después de vaciar la papelera. Haz un 
+  respaldo en Google Takeout primero."
+- Takeout link: https://takeout.google.com
+- Steps:
+  1. Abre Google Fotos en una nueva pestaña → 
+     button "Abrir Google Fotos" → https://photos.google.com
+  2. Abre la consola: F12 → pestaña Console 
+     (Mac: Cmd+Option+J)
+  3. Copia y pega el script → press Enter
+  4. Recarga con F5 y repite hasta eliminar todo
+- Script: (use this exact script)
+(function() {
+  async function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+  async function run() {
+    const photos = document.querySelectorAll(
+      'div[data-latest-bg], div[jsmodel], c-wiz div[role="checkbox"]'
+    );
+    if (!photos.length) {
+      alert('No se encontraron fotos. Asegúrate de estar en photos.google.com');
+      return;
+    }
+    let count = 0;
+    photos[0].dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
+    await sleep(300);
+    photos[0].click();
+    await sleep(300);
+    photos.forEach(p => { p.click(); count++; });
+    await sleep(500);
+    const moreBtn = 
+      document.querySelector('button[aria-label="More options"]') ||
+      document.querySelector('button[aria-label="Más opciones"]');
+    if (moreBtn) moreBtn.click();
+    await sleep(500);
+    const deleteBtn = Array.from(document.querySelectorAll('li[role="menuitem"]'))
+      .find(el => el.textContent.includes('Delete') ||
+                  el.textContent.includes('Eliminar') ||
+                  el.textContent.includes('papelera'));
+    if (deleteBtn) {
+      deleteBtn.click();
+      await sleep(500);
+      const confirmBtn = 
+        document.querySelector('button[data-mdc-dialog-action="ok"]') ||
+        Array.from(document.querySelectorAll('button'))
+          .find(b => b.textContent.includes('Move to trash') ||
+                     b.textContent.includes('Mover a la papelera'));
+      if (confirmBtn) {
+        confirmBtn.click();
+        await sleep(1000);
+        alert(`✓ ${count} fotos enviadas a la papelera.\nRecarga con F5 y ejecuta el script de nuevo.`);
+      } else {
+        alert('No se encontró el botón de confirmar. Inténtalo de nuevo.');
+      }
+    } else {
+      alert('No se encontró el botón de eliminar. Inténtalo de nuevo.');
+    }
+  }
+  run();
+})();
+- Tips:
+  • Las fotos van a la papelera por 60 días antes de eliminarse
+  • Para eliminar definitivamente ve a Papelera → Vaciar papelera
+  • Si tienes miles de fotos necesitarás ejecutar el script varias veces
+- Related tools: YouTube Delete History, YouTube Export Playlist
+
+PAGE 2: public/youtube/delete-history.html
+- Title: "Borrar historial de YouTube"
+- Platform: YouTube / Google
+- Destructive: YES
+- Warning: "Se eliminará todo tu historial de 
+  visualización de YouTube permanentemente."
+- Steps:
+  1. Ve a myactivity.google.com → button que abre 
+     https://myactivity.google.com/product/youtube
+  2. Abre la consola con F12
+  3. Copia y pega el script
+  4. Espera a que termine
+- Script:
+(function() {
+  async function sleep(ms) {
+    return new Promise(r => setTimeout(r, ms));
+  }
+  async function deleteHistory() {
+    const deleteButtons = document.querySelectorAll(
+      'button[aria-label*="Delete"], button[aria-label*="Eliminar"]'
+    );
+    if (!deleteButtons.length) {
+      alert('No se encontraron elementos. Asegúrate de estar en myactivity.google.com con YouTube seleccionado.');
+      return;
+    }
+    let deleted = 0;
+    for (const btn of deleteButtons) {
+      btn.click();
+      await sleep(500);
+      const confirmBtn = document.querySelector(
+        'button[data-mdc-dialog-action="ok"], ' +
+        'button.VfPpkd-LgbsSe[data-idom-class]'
+      );
+      if (confirmBtn) { confirmBtn.click(); deleted++; }
+      await sleep(800);
+    }
+    alert(`✓ ${deleted} elementos eliminados. Recarga y ejecuta de nuevo si quedan más.`);
+  }
+  deleteHistory();
+})();
+- Tips:
+  • El historial de YouTube afecta las recomendaciones
+  • También puedes pausar el historial en la configuración
+  • Necesitarás ejecutar varias veces si tienes mucho historial
+- Related tools: Google Fotos, YouTube Export Playlist
+
+PAGE 3: public/youtube/export-playlist.html
+- Title: "Exportar playlist de YouTube a CSV"
+- Platform: YouTube
+- Destructive: NO (no warning banner)
+- Steps:
+  1. Abre la playlist de YouTube que quieres exportar
+  2. Desplázate hasta el final para cargar todos los videos
+  3. Abre la consola con F12
+  4. Copia y pega el script → los datos se descargan 
+     automáticamente como CSV
+- Script:
+(function() {
+  const items = document.querySelectorAll('ytd-playlist-video-renderer');
+  if (!items.length) {
+    alert('No se encontraron videos. Asegúrate de estar en una página de playlist de YouTube y haber cargado todos los videos.');
+    return;
+  }
+  const rows = [['#', 'Título', 'Canal', 'URL']];
+  items.forEach((item, i) => {
+    const titleEl = item.querySelector('#video-title');
+    const channelEl = item.querySelector('#channel-name a, .ytd-channel-name a');
+    const title = titleEl ? titleEl.textContent.trim() : 'Sin título';
+    const channel = channelEl ? channelEl.textContent.trim() : 'Desconocido';
+    const url = titleEl ? 'https://www.youtube.com' + titleEl.getAttribute('href') : '';
+    rows.push([i + 1, title, channel, url]);
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], {type: 'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'youtube-playlist.csv';
+  a.click();
+  alert(`✓ ${items.length} videos exportados a youtube-playlist.csv`);
+})();
+- Tips:
+  • Desplázate hasta el final de la playlist antes de ejecutar
+  • El CSV se abre con Excel, Google Sheets o Numbers
+  • También puedes importar el CSV a Spotify manualmente
+- Related tools: Spotify Export Playlist, YouTube Delete History
+
+Create all 3 pages now. Show each file when done.
+
+PASO 5 — Herramientas Instagram
+Using the template from Step 3, create these 2 pages:
+
+PAGE 1: public/instagram/unfollow.html
+- Title: "Dejar de seguir no-seguidores en Instagram"
+- Platform: Instagram
+- Destructive: YES
+- Warning: "Instagram puede bloquear tu cuenta 
+  temporalmente si ejecutas el script muy rápido. 
+  El script incluye delays seguros automáticos."
+- Steps:
+  1. Abre Instagram en una nueva pestaña → 
+     button que abre https://www.instagram.com
+  2. Ve a tu perfil → Siguiendo
+  3. Abre la consola con F12
+  4. Copia y pega el script → espera que termine
+- Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
+    return v ? v[2] : null;
+  }
+
+  const csrftoken = getCookie('csrftoken');
+  const ds_user_id = getCookie('ds_user_id');
+
+  if (!csrftoken || !ds_user_id) {
+    alert('No se pudo obtener la sesión. Asegúrate de estar en instagram.com y haber iniciado sesión.');
+    return;
+  }
+
+  let after = null;
+  let totalUnfollowed = 0;
+  let doNext = true;
+
+  while (doNext) {
+    const url = after
+      ? `https://www.instagram.com/graphql/query/?query_hash=3dec7e2c57367ef3da3d987d89f9dbc8&variables={"id":"${ds_user_id}","first":"24","after":"${after}"}`
+      : `https://www.instagram.com/graphql/query/?query_hash=3dec7e2c57367ef3da3d987d89f9dbc8&variables={"id":"${ds_user_id}","first":"24"}`;
+
+    let data;
+    try {
+      const res = await fetch(url);
+      data = await res.json();
+    } catch(e) {
+      console.log('Error fetching:', e);
+      break;
+    }
+
+    const following = data?.data?.user?.edge_follow;
+    if (!following) { alert('Error al obtener lista. Intenta de nuevo.'); break; }
+
+    const users = following.edges;
+    doNext = following.page_info.has_next_page;
+    after = following.page_info.end_cursor;
+
+    for (const { node } of users) {
+      if (!node.follows_viewer) {
+        try {
+          await fetch(`https://www.instagram.com/web/friendships/${node.id}/unfollow/`, {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded',
+              'x-csrftoken': csrftoken
+            },
+            credentials: 'include'
+          });
+          totalUnfollowed++;
+          console.log(`✓ Unfollowed: ${node.username} (${totalUnfollowed})`);
+        } catch(e) {
+          console.log(`✗ Error unfollowing ${node.username}`);
+        }
+        await sleep(random(3000, 6000));
+      }
+    }
+    if (doNext) await sleep(random(5000, 10000));
+  }
+  alert(`✓ Proceso completado. Se dejaron de seguir ${totalUnfollowed} usuarios.`);
+})();
+- Tips:
+  • El script solo deja de seguir a quienes NO te siguen de vuelta
+  • Los delays aleatorios imitan comportamiento humano
+  • Si Instagram te bloquea temporalmente espera 24 horas
+  • Límite recomendado: no más de 200 unfollows por día
+- Related tools: Instagram Unlike All, Twitter Unfollow
+
+PAGE 2: public/instagram/unlike.html
+- Title: "Quitar likes masivamente en Instagram"
+- Platform: Instagram
+- Destructive: NO (solo quita likes, no elimina contenido)
+- Warning color: yellow/orange instead of red
+- Warning: "Este script quitará likes de publicaciones 
+  una por una. Es un proceso lento por los límites 
+  de Instagram."
+- Steps:
+  1. Abre Instagram → tu perfil → Configuración → 
+     Actividad → "Me gusta" → button que abre 
+     https://www.instagram.com/your_activity/interactions/likes
+  2. Espera que carguen todos los posts
+  3. Abre la consola con F12
+  4. Pega el script y presiona Enter
+- Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const random = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+  let count = 0;
+
+  async function unlikeVisible() {
+    const likedButtons = Array.from(document.querySelectorAll('button'))
+      .filter(b => b.getAttribute('aria-label') === 'Unlike' || 
+                   b.getAttribute('aria-label') === 'Ya no me gusta');
+    
+    for (const btn of likedButtons) {
+      btn.click();
+      count++;
+      console.log(`✓ Unlike #${count}`);
+      await sleep(random(1500, 3000));
+    }
+    return likedButtons.length;
+  }
+
+  async function run() {
+    let found = await unlikeVisible();
+    if (found === 0) {
+      alert('No se encontraron likes visibles. Asegúrate de estar en la página de Actividad → Me gusta de Instagram.');
+      return;
+    }
+    window.scrollTo(0, document.body.scrollHeight);
+    await sleep(2000);
+    const more = await unlikeVisible();
+    alert(`✓ ${count} likes eliminados en esta sesión. Recarga y ejecuta de nuevo para continuar.`);
+  }
+
+  run();
+})();
+- Tips:
+  • Debes estar en la sección "Me gusta" de Tu Actividad
+  • Instagram carga los posts en scroll infinito
+  • Ejecuta el script varias veces hasta terminar
+  • Delays aleatorios para evitar detección
+- Related tools: Instagram Unfollow, Twitter Unlike
+
+Create both pages now. Show each file when done.
+
+PASO 6 — Herramientas Twitter y Facebook
+Using the template from Step 3, create these 3 pages:
+
+PAGE 1: public/twitter/unfollow.html
+- Title: "Dejar de seguir a todos en Twitter/X"
+- Platform: Twitter / X
+- Destructive: YES
+- Warning: "Este proceso es irreversible. 
+  Dejarás de seguir a TODOS tus seguidos."
+- Steps:
+  1. Ve a twitter.com/TU_USUARIO/following → 
+     button "Abrir Twitter/X"→ https://twitter.com
+  2. Navega a tu página de "Siguiendo"
+  3. Abre la consola con F12
+  4. Pega el script y presiona Enter
+- Script:
+(async () => {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const UNFOLLOW_LIMIT = 500;
+  let count = 0;
+
+  const unfollowAll = async () => {
+    const buttons = document.querySelectorAll(
+      '[data-testid$="-unfollow"], button[aria-label*="Following"]'
+    );
+
+    if (!buttons.length) {
+      alert('No se encontraron botones de "Siguiendo". Asegúrate de estar en tu página de Siguiendo en Twitter/X.');
+      return false;
+    }
+
+    for (const btn of buttons) {
+      if (count >= UNFOLLOW_LIMIT) {
+        alert(`Límite de ${UNFOLLOW_LIMIT} alcanzado. Recarga y ejecuta de nuevo.`);
+        return false;
+      }
+      btn.click();
+      await sleep(600);
+      const confirm = document.querySelector('[data-testid="confirmationSheetConfirm"]');
+      if (confirm) { confirm.click(); count++; }
+      await sleep(1200);
+      console.log(`✓ Unfollowed ${count}`);
+    }
+    return true;
+  };
+
+  let hasMore = true;
+  while (hasMore && count < UNFOLLOW_LIMIT) {
+    hasMore = await unfollowAll();
+    window.scrollTo(0, document.body.scrollHeight);
+    await sleep(2000);
+  }
+  alert(`✓ Proceso completado. Se dejaron de seguir ${count} usuarios.`);
+})();
+- Tips:
+  • El script procesa hasta 500 por sesión para evitar bloqueos
+  • Recarga y ejecuta de nuevo para continuar
+  • Twitter puede limitar la velocidad — es normal
+- Related tools: Twitter Delete Tweets, Instagram Unfollow
+
+PAGE 2: public/twitter/delete-tweets.html
+- Title: "Borrar todos los tweets"
+- Platform: Twitter / X
+- Destructive: YES
+- Warning: "Los tweets eliminados no se pueden 
+  recuperar. Descarga tu archivo de Twitter primero 
+  en Configuración → Tu cuenta → Descargar archivo."
+- Steps:
+  1. Ve a tu perfil en twitter.com
+  2. Abre la consola con F12
+  3. Pega el script y presiona Enter
+  4. Repite hasta eliminar todos
+- Script:
+(async () => {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let deleted = 0;
+
+  const deleteTweets = async () => {
+    const menuButtons = document.querySelectorAll(
+      '[data-testid="caret"], [aria-label="More"], [aria-label="Más opciones"]'
+    );
+    if (!menuButtons.length) {
+      alert('No se encontraron tweets. Asegúrate de estar en tu perfil de Twitter/X.');
+      return;
+    }
+
+    for (const btn of menuButtons) {
+      btn.click();
+      await sleep(500);
+      const deleteOption = Array.from(
+        document.querySelectorAll('[role="menuitem"]')
+      ).find(el => el.textContent.includes('Delete') || 
+                   el.textContent.includes('Eliminar'));
+      if (deleteOption) {
+        deleteOption.click();
+        await sleep(400);
+        const confirm = document.querySelector('[data-testid="confirmationSheetConfirm"]');
+        if (confirm) { confirm.click(); deleted++; }
+        await sleep(800);
+      }
+      console.log(`✓ Deleted ${deleted} tweets`);
+    }
+    alert(`✓ ${deleted} tweets eliminados. Recarga y ejecuta de nuevo.`);
+  };
+
+  deleteTweets();
+})();
+- Tips:
+  • Descarga tu historial antes de eliminar
+  • Procesa los tweets visibles en pantalla
+  • Recarga para cargar más tweets y continuar
+- Related tools: Twitter Unfollow, Facebook Delete Posts
+
+PAGE 3: public/facebook/unfollow.html
+- Title: "Dejar de seguir amigos y páginas en Facebook"
+- Platform: Facebook
+- Destructive: NO (solo deja de ver en el feed, 
+  no elimina la amistad)
+- No red warning, use blue info banner instead:
+  "Esto solo ocultará sus publicaciones de tu feed. 
+  Seguirás siendo amigos."
+- Steps:
+  1. Ve a Configuración del feed de Facebook →
+     button que abre https://www.facebook.com/feed/preferences/
+  2. Haz click en "Dejar de seguir personas para 
+     ocultar sus publicaciones"
+  3. Abre la consola con F12
+  4. Pega el script y presiona Enter
+- Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let count = 0;
+
+  const unfollowButtons = document.querySelectorAll(
+    'div[aria-pressed="false"], button[aria-label*="Unfollow"], button[aria-label*="Dejar de seguir"]'
+  );
+
+  if (!unfollowButtons.length) {
+    alert('No se encontraron botones. Asegúrate de estar en facebook.com/feed/preferences/ en la sección de "Dejar de seguir personas".');
+    return;
+  }
+
+  for (const btn of unfollowButtons) {
+    btn.click();
+    count++;
+    console.log(`✓ Unfollowed ${count}`);
+    await sleep(2000);
+  }
+
+  alert(`✓ ${count} personas/páginas dejadas de seguir. Recarga y ejecuta de nuevo si quedan más.`);
+})();
+- Tips:
+  • Sigues siendo amigo, solo dejas de ver sus posts
+  • Puedes revertirlo en cualquier momento
+  • Ejecuta varias veces hasta limpiar todo el feed
+- Related tools: Facebook Delete Posts (próximamente), Instagram Unfollow
+
+Create all 3 pages. Show each file when done.
+
+PASO 7 — TikTok y Spotify
+Using the template from Step 3, create these 2 pages:
+
+PAGE 1: public/tiktok/unfollow.html
+- Title: "Dejar de seguir a todos en TikTok"
+- Platform: TikTok
+- Destructive: YES
+- Warning: "Dejarás de seguir a todos los usuarios. 
+  Esta acción no se puede deshacer masivamente."
+- Steps:
+  1. Abre TikTok web → tu perfil → Siguiendo →
+     button que abre https://www.tiktok.com
+  2. Desplázate para cargar todos los seguidos
+  3. Abre la consola con F12
+  4. Pega el script y presiona Enter
+- Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const random = (min, max) => Math.floor(Math.random()*(max-min+1))+min;
+  let count = 0;
+
+  const buttons = Array.from(document.querySelectorAll('button'))
+    .filter(b => 
+      b.textContent.trim() === 'Following' || 
+      b.textContent.trim() === 'Siguiendo' ||
+      b.getAttribute('aria-label')?.includes('Following')
+    );
+
+  if (!buttons.length) {
+    alert('No se encontraron botones de "Siguiendo". Asegúrate de estar en tu lista de Siguiendo en TikTok web.');
+    return;
+  }
+
+  for (const btn of buttons) {
+    btn.click();
+    await sleep(300);
+    const confirmBtn = Array.from(document.querySelectorAll('button'))
+      .find(b => b.textContent.includes('Unfollow') || 
+                 b.textContent.includes('Dejar de seguir'));
+    if (confirmBtn) { confirmBtn.click(); count++; }
+    await sleep(random(2000, 4000));
+    console.log(`✓ Unfollowed ${count}`);
+  }
+
+  alert(`✓ ${count} usuarios dejados de seguir. Recarga para continuar.`);
+})();
+- Tips:
+  • TikTok web puede ser más lento que la app
+  • Carga todos los seguidos antes de ejecutar
+  • Delays aleatorios para evitar detección
+- Related tools: Instagram Unfollow, Twitter Unfollow
+
+PAGE 2: public/spotify/export-playlist.html
+- Title: "Exportar playlist de Spotify a CSV"
+- Platform: Spotify
+- Destructive: NO
+- No warning banner
+- This page is DIFFERENT from others — it uses 
+  the Spotify Web API with OAuth PKCE, NOT a 
+  console script.
+
+Layout:
+1. Info banner (blue):
+   "Esta herramienta usa la API oficial de Spotify. 
+   Necesitas crear una app gratuita en 
+   developer.spotify.com para obtener tu Client ID."
+
+2. SETUP GUIDE (collapsible section):
+   Step A: Ve a https://developer.spotify.com/dashboard
+   Step B: Haz click en "Create app"
+   Step C: Nombre: cualquiera. 
+           Redirect URI: (la URL de esta página)
+   Step D: Copia tu Client ID y pégalo abajo
+
+3. CLIENT ID INPUT:
+   - Text input: "Pega tu Client ID de Spotify aquí"
+   - Button: "Conectar con Spotify" (green)
+
+4. After auth (show dynamically):
+   - List of user's playlists with track count
+   - Each playlist has a "Exportar CSV" button
+   - CSV contains: #, Título, Artista, Álbum, Duración, URI
+
+5. JAVASCRIPT must implement:
+   - PKCE OAuth flow (no backend needed)
+   - Fetch playlists from Spotify API
+   - Fetch all tracks with pagination
+   - Generate and download CSV with BOM for Excel
+   - Store token in sessionStorage
+   - Handle token expiry
+
+Full PKCE implementation:
+async function generateCodeVerifier(length) {
+  const array = new Uint8Array(length);
+  window.crypto.getRandomValues(array);
+  return btoa(String.fromCharCode(...array))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+async function generateCodeChallenge(verifier) {
+  const data = new TextEncoder().encode(verifier);
+  const digest = await window.crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(digest)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+OAuth endpoint: https://accounts.spotify.com/authorize
+Token endpoint: https://accounts.spotify.com/api/token
+Scopes needed: playlist-read-private playlist-read-collaborative
+
+- Tips:
+  • El Client ID es gratuito y solo toma 2 minutos crear
+  • El CSV se puede abrir en Excel o importar a Google Sheets
+  • Las playlists privadas también se exportan
+  • Puedes usar el CSV para recrear la playlist en otro servicio
+- Related tools: YouTube Export Playlist, YouTube Delete History
+
+Create both pages. Show each file when done.
+
+PASO 8 — Verificación final y deploy
+Do a final check of the complete project:
+
+1. Run the server and confirm it starts:
+   node server.js
+
+2. Verify ALL these files exist:
+   - public/index.html
+   - public/google-photos/index.html
+   - public/instagram/unfollow.html
+   - public/instagram/unlike.html
+   - public/twitter/unfollow.html
+   - public/twitter/delete-tweets.html
+   - public/facebook/unfollow.html
+   - public/tiktok/unfollow.html
+   - public/youtube/export-playlist.html
+   - public/youtube/delete-history.html
+   - public/spotify/export-playlist.html
+   - server.js
+   - package.json
+
+   Run: find . -not -path './node_modules/*' -type f
+
+3. Verify package.json has:
+   - "start": "node server.js"
+   - express as dependency
+   - NO preinstall script
+   - NO pnpm references
+
+4. Create render.yaml in root:
+services:
+  - type: web
+    name: socialkit-tools
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+
+5. Create .gitignore:
+node_modules/
+.env
+.replit
+replit.nix
+*.log
+
+6. Create README.md:
+# 🧰 SocialKit Tools
+Free browser-based tools to clean and manage 
+your social media accounts.
+
+## Tools Available
+- Google Photos bulk delete
+- Instagram unfollow & unlike
+- Twitter/X unfollow & delete tweets
+- Facebook unfollow
+- TikTok unfollow
+- YouTube export playlist & delete history
+- Spotify export playlist
+
+## Deploy
+- Build: npm install
+- Start: npm start
+- Root directory: (leave empty)
+
+Show me the complete file list when done.
+Then push everything to GitHub with:
+git add .
+git commit -m "feat: complete SocialKit Tools v1.0"
+git push origin main
