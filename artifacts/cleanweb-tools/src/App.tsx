@@ -15,7 +15,10 @@ import UnfollowTwitter from "@/pages/twitter/unfollow";
 import DeleteTweets from "@/pages/twitter/delete-tweets";
 import UnfollowFacebook from "@/pages/facebook/unfollow";
 import UnfollowTiktok from "@/pages/tiktok/unfollow";
+import UnlikeTiktok from "@/pages/tiktok/unlike";
 import SpotifyExport from "@/pages/spotify/export-playlist";
+import UnfollowLinkedin from "@/pages/linkedin/unfollow";
+import DeleteRedditComments from "@/pages/reddit/delete-comments";
 
 const queryClient = new QueryClient();
 
@@ -32,7 +35,10 @@ function Router() {
       <Route path="/twitter/borrar-tweets" component={DeleteTweets} />
       <Route path="/facebook/dejar-de-seguir" component={UnfollowFacebook} />
       <Route path="/tiktok/dejar-de-seguir" component={UnfollowTiktok} />
+      <Route path="/tiktok/quitar-likes" component={UnlikeTiktok} />
       <Route path="/spotify/exportar-playlist" component={SpotifyExport} />
+      <Route path="/linkedin/dejar-de-seguir" component={UnfollowLinkedin} />
+      <Route path="/reddit/borrar-comentarios" component={DeleteRedditComments} />
       <Route component={NotFound} />
     </Switch>
   );

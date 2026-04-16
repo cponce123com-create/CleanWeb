@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "wouter";
-import { Search, Sparkles, Linkedin } from "lucide-react";
+import { Search, Sparkles, Linkedin, Mail } from "lucide-react";
 import { 
   SiInstagram, 
   SiX, 
@@ -8,7 +8,8 @@ import {
   SiTiktok, 
   SiSpotify, 
   SiYoutube, 
-  SiGooglephotos
+  SiGooglephotos,
+  SiReddit
 } from "react-icons/si";
 import { Input } from "@/components/ui/input";
 import { toolsData } from "@/data/tools";
@@ -22,7 +23,8 @@ const iconMap: Record<string, React.ElementType> = {
   SiFacebook,
   SiTiktok,
   SiSpotify,
-  SiLinkedin: Linkedin
+  SiLinkedin: Linkedin,
+  SiReddit
 };
 
 export default function Home() {
@@ -63,7 +65,8 @@ export default function Home() {
           <div className="max-w-xl mx-auto pt-6 relative">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
-              <Input 
+              <Input
+                data-testid="input-search"
                 type="text" 
                 placeholder="Buscar por herramienta o plataforma..." 
                 className="w-full h-14 pl-12 pr-4 bg-card border-border rounded-xl text-lg focus-visible:ring-primary/50 transition-all shadow-sm"
@@ -132,8 +135,30 @@ export default function Home() {
           )}
         </div>
 
+        {/* Suggest a tool */}
+        <section className="mt-24">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl font-bold mb-2">¿Necesitas otra herramienta?</h2>
+            <p className="text-muted-foreground">
+              Dinos qué plataforma o acción te gustaría automatizar y la añadiremos.
+            </p>
+          </div>
+          <div className="max-w-sm mx-auto">
+            <a
+              data-testid="link-suggest-tool"
+              href="mailto:tools@cleanweb.tools?subject=Sugerencia%20de%20herramienta"
+              className="flex items-center justify-center gap-3 p-6 rounded-xl border-2 border-primary bg-primary/5 hover:bg-primary/10 hover:-translate-y-1 transition-all duration-200 group"
+            >
+              <Mail className="w-5 h-5 text-primary" />
+              <span className="font-semibold text-primary group-hover:underline">
+                Enviar sugerencia
+              </span>
+            </a>
+          </div>
+        </section>
+
         {/* Footer */}
-        <footer className="mt-24 pt-8 border-t border-border text-center pb-8 space-y-2">
+        <footer className="mt-16 pt-8 border-t border-border text-center pb-8 space-y-2">
           <p className="text-muted-foreground">
             Todas las herramientas funcionan en tu navegador. Ningún dato es enviado a ningún servidor.
           </p>

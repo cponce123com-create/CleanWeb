@@ -57,7 +57,7 @@ export const toolsData = [
   {
     id: "instagram-comentarios",
     title: "Borrar comentarios",
-    description: "Elimina tus comentarios de publicaciones.",
+    description: "Elimina todos tus comentarios de Instagram.",
     platform: "Instagram",
     icon: "SiInstagram",
     badge: "Próximamente",
@@ -123,7 +123,7 @@ export const toolsData = [
   {
     id: "facebook-posts",
     title: "Borrar todos los posts",
-    description: "Elimina tu historial de publicaciones.",
+    description: "Elimina tus publicaciones de Facebook en masa.",
     platform: "Facebook",
     icon: "SiFacebook",
     badge: "Próximamente",
@@ -143,15 +143,15 @@ export const toolsData = [
     disabled: false
   },
   {
-    id: "tiktok-likes",
+    id: "tiktok-unlike",
     title: "Quitar likes masivamente",
-    description: "Elimina likes a videos.",
+    description: "Elimina todos tus likes de TikTok.",
     platform: "TikTok",
     icon: "SiTiktok",
-    badge: "Próximamente",
-    badgeColor: "gray",
-    href: "#",
-    disabled: true
+    badge: "Script de consola",
+    badgeColor: "green",
+    href: "/tiktok/quitar-likes",
+    disabled: false
   },
   {
     id: "spotify-export",
@@ -167,7 +167,18 @@ export const toolsData = [
   {
     id: "linkedin-unfollow",
     title: "Dejar de seguir conexiones",
-    description: "Limpia tu feed profesional.",
+    description: "Limpia tu feed de LinkedIn dejando de seguir contactos inactivos.",
+    platform: "LinkedIn",
+    icon: "SiLinkedin",
+    badge: "Script de consola",
+    badgeColor: "green",
+    href: "/linkedin/dejar-de-seguir",
+    disabled: false
+  },
+  {
+    id: "linkedin-posts",
+    title: "Borrar todos los posts",
+    description: "Elimina todas tus publicaciones de LinkedIn.",
     platform: "LinkedIn",
     icon: "SiLinkedin",
     badge: "Próximamente",
@@ -176,11 +187,22 @@ export const toolsData = [
     disabled: true
   },
   {
-    id: "linkedin-posts",
-    title: "Borrar todos los posts",
-    description: "Elimina tu historial de publicaciones.",
-    platform: "LinkedIn",
-    icon: "SiLinkedin",
+    id: "reddit-delete-comments",
+    title: "Borrar comentarios",
+    description: "Elimina todos tus comentarios de Reddit.",
+    platform: "Reddit",
+    icon: "SiReddit",
+    badge: "Script de consola",
+    badgeColor: "green",
+    href: "/reddit/borrar-comentarios",
+    disabled: false
+  },
+  {
+    id: "reddit-delete-posts",
+    title: "Borrar posts",
+    description: "Elimina todos tus posts de Reddit.",
+    platform: "Reddit",
+    icon: "SiReddit",
     badge: "Próximamente",
     badgeColor: "gray",
     href: "#",

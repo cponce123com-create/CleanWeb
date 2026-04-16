@@ -1,0 +1,242 @@
+I have a React + Vite + TypeScript app called CleanWeb.tools 
+already built. I need you to improve and expand it.
+
+DO NOT rebuild from scratch. Only add and improve what exists.
+
+═══════════════════════════════════════
+IMPROVEMENT 1 — Add missing tools to src/data/tools.ts
+═══════════════════════════════════════
+
+Add these tools to the existing toolsData array:
+
+Platform: LinkedIn
+- { id: "linkedin-unfollow", title: "Dejar de seguir conexiones", 
+    description: "Limpia tu feed de LinkedIn dejando de seguir 
+    contactos inactivos", href: "/linkedin/dejar-de-seguir", 
+    badge: "Script", badgeColor: "green", icon: "SiLinkedin", 
+    platform: "LinkedIn", disabled: false }
+- { id: "linkedin-delete-posts", title: "Borrar todos los posts",
+    description: "Elimina todas tus publicaciones de LinkedIn", 
+    href: "/linkedin/borrar-posts", badge: "Próximamente", 
+    badgeColor: "gray", disabled: true }
+
+Platform: Reddit
+- { id: "reddit-delete-comments", title: "Borrar comentarios",
+    description: "Elimina todos tus comentarios de Reddit", 
+    href: "/reddit/borrar-comentarios", badge: "Script",
+    badgeColor: "green", icon: "SiReddit", 
+    platform: "Reddit", disabled: false }
+- { id: "reddit-delete-posts", title: "Borrar posts",
+    description: "Elimina todos tus posts de Reddit",
+    badge: "Próximamente", badgeColor: "gray", disabled: true }
+
+Platform: Facebook (add to existing)
+- { id: "facebook-delete-posts", title: "Borrar todos los posts",
+    description: "Elimina tus publicaciones de Facebook en masa",
+    badge: "Próximamente", badgeColor: "gray", disabled: true }
+- { id: "facebook-leave-groups", title: "Salir de todos los grupos",
+    description: "Abandona todos los grupos de Facebook de una vez",
+    badge: "Próximamente", badgeColor: "gray", disabled: true }
+
+Platform: TikTok (add to existing)
+- { id: "tiktok-unlike", title: "Quitar likes masivamente",
+    description: "Elimina todos tus likes de TikTok",
+    href: "/tiktok/quitar-likes", badge: "Script",
+    badgeColor: "green", icon: "SiTiktok",
+    platform: "TikTok", disabled: false }
+
+Platform: Instagram (add to existing)
+- { id: "instagram-delete-comments", title: "Borrar comentarios",
+    description: "Elimina todos tus comentarios de Instagram",
+    badge: "Próximamente", badgeColor: "gray", disabled: true }
+
+═══════════════════════════════════════
+IMPROVEMENT 2 — Add new tool pages
+═══════════════════════════════════════
+
+Create these new pages using the existing ToolPageLayout component:
+
+PAGE 1: src/pages/linkedin/unfollow.tsx
+Route: /linkedin/dejar-de-seguir
+Title: "Dejar de seguir conexiones en LinkedIn"
+Warning: "Solo dejarás de ver sus posts en el feed. 
+Seguirás conectado con ellos."
+Steps:
+1. Ve a linkedin.com/feed → button abre https://www.linkedin.com/feed/
+2. Haz click en los 3 puntos del feed → 
+   "Dejar de seguir" masivamente
+3. Abre la consola con F12
+4. Pega y ejecuta el script
+Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let count = 0;
+  const buttons = Array.from(document.querySelectorAll('button'))
+    .filter(b => b.textContent.includes('Following') || 
+                 b.textContent.includes('Siguiendo'));
+  if (!buttons.length) {
+    alert('No se encontraron botones. Ve a linkedin.com/mynetwork/following/');
+    return;
+  }
+  for (const btn of buttons) {
+    btn.click();
+    await sleep(300);
+    const confirm = Array.from(document.querySelectorAll('button'))
+      .find(b => b.textContent.includes('Unfollow') || 
+                 b.textContent.includes('Dejar de seguir'));
+    if (confirm) { confirm.click(); count++; }
+    await sleep(2500);
+    console.log(`✓ Unfollowed ${count}`);
+  }
+  alert(`✓ ${count} conexiones dejadas de seguir. Recarga y repite.`);
+})();
+Tips:
+- Ve a linkedin.com/mynetwork/following/ para ver todos los seguidos
+- Delays de 2.5s para evitar detección
+- Puedes reactivar el seguimiento en cualquier momento
+Related: Instagram Unfollow, Twitter Unfollow
+
+PAGE 2: src/pages/reddit/delete-comments.tsx
+Route: /reddit/borrar-comentarios
+Title: "Borrar todos los comentarios de Reddit"
+Warning: "Los comentarios eliminados no se pueden recuperar."
+Steps:
+1. Ve a reddit.com/user/TU_USUARIO/comments →
+   button abre https://www.reddit.com
+2. Desplázate para cargar todos los comentarios
+3. Abre la consola con F12
+4. Pega y ejecuta el script
+Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  let deleted = 0;
+  async function deleteVisible() {
+    const menus = document.querySelectorAll(
+      'button[aria-label*="more options"], button[aria-label*="más opciones"]'
+    );
+    for (const menu of menus) {
+      menu.click();
+      await sleep(400);
+      const deleteBtn = Array.from(document.querySelectorAll('[role="menuitem"]'))
+        .find(el => el.textContent.toLowerCase().includes('delete') || 
+                    el.textContent.toLowerCase().includes('eliminar'));
+      if (deleteBtn) {
+        deleteBtn.click();
+        await sleep(300);
+        const confirm = document.querySelector('button[data-testid="confirm-button"]') ||
+          Array.from(document.querySelectorAll('button'))
+            .find(b => b.textContent.includes('Yes') || b.textContent.includes('Sí'));
+        if (confirm) { confirm.click(); deleted++; }
+        await sleep(800);
+      }
+    }
+  }
+  await deleteVisible();
+  window.scrollTo(0, document.body.scrollHeight);
+  await sleep(2000);
+  await deleteVisible();
+  alert(`✓ ${deleted} comentarios eliminados. Recarga y repite.`);
+})();
+Tips:
+- Ve a tu perfil → pestaña Comentarios
+- Carga todos antes de ejecutar (scroll hasta el final)
+- Reddit puede tardar en actualizar
+Related: Reddit Delete Posts (próximamente), Twitter Delete Tweets
+
+PAGE 3: src/pages/tiktok/unlike.tsx
+Route: /tiktok/quitar-likes
+Title: "Quitar likes masivamente en TikTok"
+Info (blue, not warning): "Este proceso es lento por los 
+límites de TikTok. Sé paciente."
+Steps:
+1. Abre TikTok web → Perfil → Me gusta →
+   button abre https://www.tiktok.com
+2. Desplázate para cargar todos los videos
+3. Abre la consola con F12
+4. Pega y ejecuta el script
+Script:
+(async function() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const random = (a,b) => Math.floor(Math.random()*(b-a+1))+a;
+  let count = 0;
+  const likedVideos = document.querySelectorAll(
+    'button[aria-label*="Like"], button[data-e2e*="like-icon"]'
+  );
+  if (!likedVideos.length) {
+    alert('No se encontraron videos con like. Asegúrate de estar en tu perfil → Me gusta en TikTok web.');
+    return;
+  }
+  for (const btn of likedVideos) {
+    btn.click(); count++;
+    console.log(`✓ Unlike #${count}`);
+    await sleep(random(1500, 3000));
+  }
+  alert(`✓ ${count} likes eliminados. Recarga y ejecuta de nuevo.`);
+})();
+Tips:
+- Debes estar en tu perfil → sección Me gusta
+- TikTok web carga videos en scroll infinito
+- Ejecuta el script varias veces
+Related: TikTok Unfollow, Instagram Unlike
+
+═══════════════════════════════════════
+IMPROVEMENT 3 — Add routes to App.tsx
+═══════════════════════════════════════
+
+Add these imports and routes to App.tsx:
+
+import UnfollowLinkedin from "@/pages/linkedin/unfollow";
+import DeleteRedditComments from "@/pages/reddit/delete-comments";
+import UnlikeTiktok from "@/pages/tiktok/unlike";
+
+Routes to add:
+<Route path="/linkedin/dejar-de-seguir" component={UnfollowLinkedin} />
+<Route path="/reddit/borrar-comentarios" component={DeleteRedditComments} />
+<Route path="/tiktok/quitar-likes" component={UnlikeTiktok} />
+
+═══════════════════════════════════════
+IMPROVEMENT 4 — Add SEO meta tags
+═══════════════════════════════════════
+
+Update index.html in the project root to include:
+
+<meta name="description" content="Herramientas gratuitas 
+para limpiar tu huella digital. Elimina fotos, posts, 
+comentarios y deja de seguir en Instagram, Twitter, 
+TikTok, Facebook, YouTube y más.">
+<meta name="keywords" content="eliminar fotos google, 
+dejar de seguir instagram, borrar tweets, limpiar 
+redes sociales, digital detox">
+<meta property="og:title" content="CleanWeb.tools — 
+Limpia tu vida digital">
+<meta property="og:description" content="Suite gratuita 
+de herramientas para gestionar y limpiar tus redes sociales">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://cleanweb.tools">
+
+═══════════════════════════════════════
+IMPROVEMENT 5 — "Suggest a tool" section
+═══════════════════════════════════════
+
+Add a section at the bottom of the homepage 
+(src/pages/home.tsx), above the footer:
+
+- Title: "¿Necesitas otra herramienta?"
+- Subtitle: "Dinos qué plataforma o acción te gustaría 
+  automatizar y la añadiremos."
+- A card with a mailto link:
+  href="mailto:tools@cleanweb.tools?subject=Sugerencia de herramienta"
+  Text: "✉️ Enviar sugerencia"
+- Style: same card design as tool cards, 
+  green border, centered text
+
+═══════════════════════════════════════
+IMPORTANT: After all changes
+═══════════════════════════════════════
+
+1. Run the app and confirm it builds without errors
+2. Show me the updated App.tsx and tools data file
+3. Confirm all new routes work
+4. Do NOT change the existing working pages
+5. Do NOT change the design system or theme
