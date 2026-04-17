@@ -4,48 +4,72 @@ import { ScriptBlock } from "@/components/script-block";
 
 const SCRIPT_CODE = `(async function deleteAllTweets() {
   const delay = ms => new Promise(r => setTimeout(r, ms));
+  const randDelay = (min, max) => delay(min + Math.random() * (max - min));
   let deleted = 0;
-  
+  let emptyRounds = 0;
+
   async function deleteVisible() {
-    const moreMenuBtns = document.querySelectorAll('[data-testid="caret"]');
-    
-    for (const btn of moreMenuBtns) {
-      btn.click();
-      await delay(400);
-      
-      const deleteOption = document.querySelector('[data-testid="Eliminar"] span, [role="menuitem"]');
+    const carets = document.querySelectorAll('[data-testid="caret"]');
+    if (carets.length === 0) return 0;
+
+    let count = 0;
+    for (const caret of carets) {
+      (caret as HTMLElement).click();
+      await delay(500);
+
+      // Find "Delete" option in the dropdown
       const items = document.querySelectorAll('[role="menuitem"]');
       let deleteItem = null;
-      
       for (const item of items) {
-        if (item.textContent?.includes('Delete') || item.textContent?.includes('Eliminar')) {
+        const text = item.textContent?.toLowerCase() || '';
+        if (text.includes('delete') || text.includes('eliminar')) {
           deleteItem = item;
           break;
         }
       }
-      
-      if (deleteItem) {
-        deleteItem.click();
-        await delay(400);
-        const confirm = document.querySelector('[data-testid="confirmationSheetConfirm"]');
-        if (confirm) { confirm.click(); deleted++; }
-        await delay(1000 + Math.random() * 500);
+
+      if (!deleteItem) {
+        // Close menu and move on
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await delay(300);
+        continue;
+      }
+
+      (deleteItem as HTMLElement).click();
+      await delay(500);
+
+      // Confirm deletion
+      const confirm =
+        document.querySelector('[data-testid="confirmationSheetConfirm"]') as HTMLElement | null;
+      if (confirm) {
+        confirm.click();
+        deleted++;
+        count++;
+        console.log(\`[CleanWeb] 🗑️ Tweet #\${deleted} eliminado\`);
+        await randDelay(1200, 2000);
       }
     }
+    return count;
   }
-  
-  console.log('[CleanWeb] Eliminando tweets...');
-  
+
+  console.log('[CleanWeb] 🚀 Iniciando borrado de tweets...');
+  console.log('[CleanWeb] Asegúrate de estar en: x.com/TU_USUARIO');
+
   while (true) {
-    await deleteVisible();
-    window.scrollBy(0, 500);
-    await delay(2000);
-    
-    const tweets = document.querySelectorAll('[data-testid="caret"]');
-    if (tweets.length === 0) {
-      console.log(\`[CleanWeb] Completado. Eliminados: \${deleted} tweets.\`);
-      break;
+    const removed = await deleteVisible();
+
+    if (removed === 0) {
+      emptyRounds++;
+      if (emptyRounds >= 4) {
+        console.log(\`[CleanWeb] ✅ Completado. Total eliminados: \${deleted} tweets.\`);
+        break;
+      }
+    } else {
+      emptyRounds = 0;
     }
+
+    window.scrollBy(0, 600);
+    await delay(2000);
   }
 })();`;
 
@@ -58,22 +82,42 @@ export default function DeleteTweets() {
       breadcrumbs={[
         { label: "Inicio", href: "/" },
         { label: "Twitter / X" },
-        { label: "Borrar todos los tweets" }
+        { label: "Borrar todos los tweets" },
       ]}
-      warning="Los tweets eliminados no se pueden recuperar."
+      warning="Los tweets eliminados no se pueden recuperar. Considera exportar tu archivo de datos desde la configuración de X antes de proceder."
       relatedTools={[
-        { title: "Dejar de seguir a todos", href: "/twitter/dejar-de-seguir", description: "Vuelve a cero tus seguidos en X/Twitter." }
+        {
+          title: "Dejar de seguir a todos",
+          href: "/twitter/dejar-de-seguir",
+          description: "Vuelve a cero tus seguidos en X/Twitter.",
+        },
       ]}
     >
-      <div className="space-y-2 mb-8">
+      <div className="mb-8">
         <StepCard number={1}>
-          Ve a twitter.com/YOUR_USERNAME (tu perfil).
+          Ve a tu perfil en{" "}
+          <a
+            href="https://x.com"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary hover:underline"
+          >
+            x.com/TU_USUARIO
+          </a>{" "}
+          (reemplaza TU_USUARIO con tu nombre de cuenta).
         </StepCard>
         <StepCard number={2}>
-          Abre DevTools (<kbd className="px-2 py-1 bg-muted rounded text-xs">F12</kbd>) y ve a la pestaña <strong>Consola</strong>.
+          Abre DevTools (<kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">F12</kbd>)
+          y ve a la pestaña <strong>Consola</strong>.
         </StepCard>
         <StepCard number={3}>
-          Ejecuta el script (elimina tweets de página en página).
+          Pega el script y presiona{" "}
+          <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd>. El script
+          eliminará los tweets visibles y hará scroll automático para continuar.
+        </StepCard>
+        <StepCard number={4}>
+          Cuando termine, recarga la página y ejecuta de nuevo si aún quedan tweets (X carga en
+          lotes).
         </StepCard>
       </div>
 
