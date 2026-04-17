@@ -10,8 +10,8 @@ import {
   SiYoutube,
   SiGooglephotos,
   SiReddit,
-  SiLinkedin,
 } from "react-icons/si";
+import { FaLinkedin } from "react-icons/fa";
 import { Input } from "@/components/ui/input";
 import { toolsData } from "@/data/tools";
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ const iconMap: Record<string, React.ElementType> = {
   SiFacebook,
   SiTiktok,
   SiSpotify,
-  SiLinkedin,
+  SiLinkedin: FaLinkedin,
   SiReddit,
 };
 
