@@ -4,39 +4,87 @@ import { ScriptBlock } from "@/components/script-block";
 
 const SCRIPT_CODE = `(async function deleteAllGooglePhotos() {
   const delay = ms => new Promise(r => setTimeout(r, ms));
+  const randDelay = (min, max) => delay(min + Math.random() * (max - min));
   let deleted = 0;
-  
-  while (true) {
-    const checkboxes = document.querySelectorAll('[data-id] input[type="checkbox"]');
-    if (checkboxes.length === 0) {
-      console.log('[CleanWeb] Buscando fotos...');
-      document.querySelector('[data-id]')?.click();
-      await delay(1000);
-      continue;
-    }
-    
-    checkboxes[0].closest('[data-id]').dispatchEvent(new MouseEvent('mouseover', {bubbles: true}));
-    await delay(300);
-    
+  let emptyRounds = 0;
+
+  async function selectAndDelete() {
+    // Hover sobre el primer elemento para revelar el checkbox
+    const firstItem = document.querySelector('[data-id]');
+    if (!firstItem) return 0;
+
+    firstItem.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+    await delay(400);
+
+    const checkboxes = document.querySelectorAll('[data-id] input[type="checkbox"]:not(:checked)');
+    if (checkboxes.length === 0) return 0;
+
+    // Seleccionar todas las fotos visibles
     for (const cb of checkboxes) {
-      cb.click();
-      await delay(100);
+      (cb as HTMLInputElement).click();
+      await delay(60);
     }
-    
-    const deleteBtn = document.querySelector('[aria-label*="Delete"]') || 
-                      document.querySelector('[aria-label*="Eliminar"]');
-    if (deleteBtn) {
-      deleteBtn.click();
-      await delay(500);
-      const confirm = document.querySelector('[data-mdc-dialog-action="ok"]') ||
-                      document.querySelector('button[class*="confirm"]');
-      if (confirm) { confirm.click(); deleted += checkboxes.length; }
+    await delay(500);
+
+    // Buscar botón de eliminar en la toolbar
+    const deleteBtn =
+      document.querySelector('[aria-label*="Delete"]') ||
+      document.querySelector('[aria-label*="Eliminar"]') ||
+      document.querySelector('[data-tooltip-id*="delete"]');
+
+    if (!deleteBtn) {
+      // Deseleccionar y salir si no aparece el botón
+      for (const cb of document.querySelectorAll('[data-id] input[type="checkbox"]:checked')) {
+        (cb as HTMLInputElement).click();
+      }
+      return 0;
     }
-    
-    console.log(\`[CleanWeb] Eliminadas: \${deleted} fotos\`);
-    await delay(2000);
-    window.scrollBy(0, 500);
-    await delay(1000);
+
+    (deleteBtn as HTMLElement).click();
+    await delay(800);
+
+    // Confirmar el diálogo de eliminación
+    const confirmBtn =
+      document.querySelector('[data-mdc-dialog-action="ok"]') ||
+      document.querySelector('button[class*="confirm"]') ||
+      Array.from(document.querySelectorAll('button')).find(
+        b => b.textContent?.includes('Move to trash') || b.textContent?.includes('Mover a la papelera')
+      );
+
+    if (confirmBtn) {
+      (confirmBtn as HTMLElement).click();
+      const count = checkboxes.length;
+      deleted += count;
+      console.log(\`[CleanWeb] 🗑️ Eliminadas \${count} fotos | Total: \${deleted}\`);
+      return count;
+    }
+
+    // Si no apareció confirmación, cerrar el diálogo
+    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    return 0;
+  }
+
+  console.log('[CleanWeb] 🚀 Iniciando eliminación de Google Fotos...');
+  console.log('[CleanWeb] Asegúrate de estar en: photos.google.com');
+
+  while (true) {
+    const removed = await selectAndDelete();
+
+    if (removed === 0) {
+      emptyRounds++;
+      window.scrollBy(0, 600);
+      await delay(1500);
+      if (emptyRounds >= 5) {
+        console.log(\`[CleanWeb] ✅ Proceso completado. Total fotos eliminadas: \${deleted}\`);
+        console.log('[CleanWeb] Recuerda vaciar la Papelera en Google Fotos para liberar espacio.');
+        break;
+      }
+    } else {
+      emptyRounds = 0;
+      await randDelay(2000, 3500);
+      window.scrollTo(0, 0); // Volver arriba para capturar fotos nuevas cargadas
+      await delay(1000);
+    }
   }
 })();`;
 
@@ -49,30 +97,50 @@ export default function DeletePhotos() {
       breadcrumbs={[
         { label: "Inicio", href: "/" },
         { label: "Google" },
-        { label: "Eliminar Google Fotos" }
+        { label: "Eliminar Google Fotos" },
       ]}
-      warning="Esta acción es irreversible. Asegúrate de tener una copia de seguridad."
-      info="Este script se ejecuta directamente en tu navegador. Google puede pedir confirmación adicional. Si el script se detiene, vuelve a ejecutarlo."
+      warning="Esta acción mueve las fotos a la Papelera — no se eliminan de forma permanente hasta que vacíes la papelera manualmente. Aun así, ten una copia de seguridad antes de proceder."
+      info="El script selecciona y elimina fotos en lotes. Puede tardar varios minutos dependiendo del número de fotos."
       relatedTools={[
-        { title: "Exportar playlist YouTube", href: "/youtube/exportar-playlist", description: "Exporta tus listas de reproducción." },
-        { title: "Borrar historial YouTube", href: "/youtube/borrar-historial", description: "Limpia tu rastro de visualización." }
+        {
+          title: "Exportar playlist YouTube",
+          href: "/youtube/exportar-playlist",
+          description: "Exporta tus listas de reproducción a CSV.",
+        },
+        {
+          title: "Borrar historial YouTube",
+          href: "/youtube/borrar-historial",
+          description: "Limpia tu rastro de visualización.",
+        },
       ]}
     >
-      <div className="space-y-2 mb-8">
+      <div className="mb-8">
         <StepCard number={1}>
-          Abre Google Fotos en tu navegador: <a href="https://photos.google.com" target="_blank" rel="noreferrer" className="text-primary hover:underline">photos.google.com</a>
+          Abre{" "}
+          <a
+            href="https://photos.google.com"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary hover:underline"
+          >
+            photos.google.com
+          </a>{" "}
+          e inicia sesión con tu cuenta de Google.
         </StepCard>
         <StepCard number={2}>
-          Inicia sesión con tu cuenta de Google.
+          Abre las DevTools con{" "}
+          <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">F12</kbd> o{" "}
+          <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Ctrl+Shift+I</kbd> y ve a
+          la pestaña <strong>Consola</strong>.
         </StepCard>
         <StepCard number={3}>
-          Abre las DevTools pulsando <kbd className="px-2 py-1 bg-muted rounded text-xs">F12</kbd> o <kbd className="px-2 py-1 bg-muted rounded text-xs">Ctrl+Shift+I</kbd> y ve a la pestaña <strong>Consola</strong>.
+          Pega el script y presiona{" "}
+          <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd>. El script
+          seleccionará y eliminará fotos automáticamente.
         </StepCard>
         <StepCard number={4}>
-          Pega el siguiente script y presiona Enter.
-        </StepCard>
-        <StepCard number={5}>
-          El script seleccionará y eliminará las fotos automáticamente con pausas para evitar bloqueos.
+          Cuando termine, ve a la <strong>Papelera</strong> de Google Fotos y vacíala para liberar
+          el espacio de almacenamiento definitivamente.
         </StepCard>
       </div>
 

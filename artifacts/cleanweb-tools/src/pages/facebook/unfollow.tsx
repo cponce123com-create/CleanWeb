@@ -4,35 +4,64 @@ import { ScriptBlock } from "@/components/script-block";
 
 const SCRIPT_CODE = `(async function unfollowAllFacebook() {
   const delay = ms => new Promise(r => setTimeout(r, ms));
+  const randDelay = (min, max) => delay(min + Math.random() * (max - min));
   let unfollowed = 0;
-  
-  async function processPage() {
-    const unfollowBtns = document.querySelectorAll('[aria-label="Siguiendo"], [aria-label="Following"]');
-    
-    for (const btn of unfollowBtns) {
-      btn.click();
-      await delay(500);
-      
-      const confirm = document.querySelector('[aria-label="Dejar de seguir"], [aria-label="Unfollow"]');
+  let emptyRounds = 0;
+
+  async function processVisible() {
+    // Target "Siguiendo"/"Following" buttons in the feed preferences page
+    const buttons = Array.from(document.querySelectorAll('div[role="button"]')).filter(el => {
+      const label = el.getAttribute('aria-label') || el.textContent?.trim() || '';
+      return label === 'Siguiendo' || label === 'Following';
+    });
+
+    if (buttons.length === 0) return 0;
+
+    let count = 0;
+    for (const btn of buttons) {
+      (btn as HTMLElement).click();
+      await delay(700);
+
+      // Wait for dropdown / confirmation
+      const confirm = Array.from(document.querySelectorAll('[role="menuitem"], [role="button"]'))
+        .find(el => {
+          const t = el.textContent?.trim() || '';
+          return t === 'Dejar de seguir' || t === 'Unfollow';
+        });
+
       if (confirm) {
-        confirm.click();
+        (confirm as HTMLElement).click();
         unfollowed++;
-        console.log(\`[CleanWeb] Dejado de seguir: #\${unfollowed}\`);
-        await delay(2000 + Math.random() * 1000);
+        count++;
+        console.log(\`[CleanWeb] 👋 Unfollow #\${unfollowed}\`);
+        await randDelay(2500, 4000);
+      } else {
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+        await delay(400);
       }
     }
+    return count;
   }
-  
-  console.log('[CleanWeb] Iniciando en Facebook...');
+
+  console.log('[CleanWeb] 🚀 Iniciando en Facebook...');
   console.log('[CleanWeb] Asegúrate de estar en: facebook.com/feed/preferences');
-  
-  for (let i = 0; i < 20; i++) {
-    await processPage();
-    window.scrollBy(0, 600);
-    await delay(1500);
+
+  while (true) {
+    const removed = await processVisible();
+
+    if (removed === 0) {
+      emptyRounds++;
+      if (emptyRounds >= 4) {
+        console.log(\`[CleanWeb] ✅ Completado. Total: \${unfollowed} unfollows.\`);
+        break;
+      }
+    } else {
+      emptyRounds = 0;
+    }
+
+    window.scrollBy(0, 700);
+    await delay(1800);
   }
-  
-  console.log(\`[CleanWeb] Completado. Total: \${unfollowed}\`);
 })();`;
 
 export default function UnfollowFacebook() {
@@ -44,19 +73,37 @@ export default function UnfollowFacebook() {
       breadcrumbs={[
         { label: "Inicio", href: "/" },
         { label: "Facebook" },
-        { label: "Dejar de seguir amigos y páginas" }
+        { label: "Dejar de seguir amigos y páginas" },
       ]}
-      warning="Actúa en facebook.com/feed/preferences"
+      warning="El script actúa en la página de preferencias del feed. No elimina amigos ni páginas — solo deja de ver su contenido en el timeline."
+      info="Facebook carga el contenido de forma paginada. Si quedan contactos tras la primera ejecución, recarga y vuelve a ejecutar."
     >
-      <div className="space-y-2 mb-8">
+      <div className="mb-8">
         <StepCard number={1}>
-          Ve a <a href="https://facebook.com/feed/preferences" target="_blank" rel="noreferrer" className="text-primary hover:underline">facebook.com/feed/preferences</a>
+          Ve a{" "}
+          <a
+            href="https://facebook.com/feed/preferences"
+            target="_blank"
+            rel="noreferrer"
+            className="text-primary hover:underline"
+          >
+            facebook.com/feed/preferences
+          </a>{" "}
+          y asegúrate de estar en la sección <strong>"Personas"</strong> o{" "}
+          <strong>"Páginas"</strong>.
         </StepCard>
         <StepCard number={2}>
-          Abre DevTools (<kbd className="px-2 py-1 bg-muted rounded text-xs">F12</kbd>) y ve a la pestaña <strong>Consola</strong>.
+          Abre DevTools (<kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">F12</kbd>)
+          y ve a la pestaña <strong>Consola</strong>.
         </StepCard>
         <StepCard number={3}>
-          Ejecuta el script.
+          Pega el script y presiona{" "}
+          <kbd className="px-2 py-0.5 bg-muted rounded text-xs font-mono">Enter</kbd>. El script
+          hará scroll automático y procesará cada botón visible.
+        </StepCard>
+        <StepCard number={4}>
+          Si quieres limpiar <strong>páginas</strong> también, navega a la pestaña "Páginas" en la
+          misma URL y ejecuta el script de nuevo.
         </StepCard>
       </div>
 
